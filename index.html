@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Strong Legs &amp; Core Plan</title>
+<meta name="description" content="12-week strength plan for legs, core, back and arms with a workout log.">
+<meta name="theme-color" content="#2E6A4E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Strong Plan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+label.btn{text-align:center}
+/* Layout: a training-log notebook. Week strip on top, one workout open at a time, exercise cards below, progress at the end. */
+:root{
+  --bg:#F2F4F1; --surface:#FFFFFF; --ink:#18221D; --muted:#5B6862; --line:#D9DFDA;
+  --accent:#2E6A4E; --accent-ink:#FFFFFF; --accent-soft:#E1EDE6; --amber:#B7791F; --amber-soft:#F7ECD9;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --surface:#1A221E; --ink:#E6ECE8; --muted:#9AA8A1; --line:#2C3832;
+  --accent:#6FBF94; --accent-ink:#0E1612; --accent-soft:#1F3329; --amber:#E0A84E; --amber-soft:#33291A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A221E; --ink:#E6ECE8; --muted:#9AA8A1; --line:#2C3832;
+  --accent:#6FBF94; --accent-ink:#0E1612; --accent-soft:#1F3329; --amber:#E0A84E; --amber-soft:#33291A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+.wrap{max-width:880px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:2.6rem}
+h2{font-size:1.7rem}
+h3{font-size:1.3rem}
+.eyebrow{font:600 .78rem/1 var(--body);text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+p{margin:0}
+.muted{color:var(--muted)}
+header{display:grid;gap:10px}
+header p{max-width:62ch}
+.note{background:var(--amber-soft);border-left:3px solid var(--amber);padding:10px 14px;border-radius:4px;font-size:.92rem;max-width:70ch}
+.sync{font-size:.82rem;color:var(--muted)}
+section{display:grid;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;color:var(--ink);padding:7px 16px;font:600 .9rem var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+/* phase + week */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:4px}
+.phase.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.phase b{font-family:var(--display);font-size:1.15rem}
+.phase span{font-size:.88rem;color:var(--muted)}
+.weeks{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+.wk{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 0 5px;cursor:pointer;display:grid;gap:4px;justify-items:center;font:600 .85rem var(--mono)}
+.wk[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.dots{display:flex;gap:3px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dots i.d{background:var(--accent)}
+/* workout tabs */
+.days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.day{text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:12px 14px;cursor:pointer;display:grid;gap:2px;font:inherit}
+.day[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.day small{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.day strong{font-family:var(--display);font-size:1.2rem}
+.day .st{font-size:.85rem;color:var(--muted)}
+.day .st.ok{color:var(--accent);font-weight:600}
+/* session */
+.session{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:16px}
+.warm{font-size:.92rem;color:var(--muted)}
+.ex{border-top:1px solid var(--line);padding-top:14px;display:grid;grid-template-columns:2.2rem minmax(0,1fr) auto;gap:6px 12px;align-items:start}
+.ex .n{font:700 1.4rem/1 var(--display);color:var(--accent)}
+.ex .main{min-width:0;display:grid;gap:4px}
+.ex .name{font-weight:700;font-size:1.05rem}
+.ex .rx{font:500 .9rem var(--mono);color:var(--ink);white-space:nowrap}
+.tag{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);font-weight:700}
+.log{grid-column:2/4;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.log label{font-size:.85rem;color:var(--muted);display:flex;gap:6px;align-items:center}
+.log input{width:6.5rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:500 .9rem var(--mono)}
+.log .prev{font-size:.82rem;color:var(--muted)}
+details{grid-column:2/4}
+summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--accent)}
+.how{display:grid;gap:8px;padding:8px 0 2px;font-size:.94rem}
+.how ul{margin:0;padding-left:1.1rem;display:grid;gap:3px}
+.how .warn{color:var(--muted)}
+.how a{color:var(--accent);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.btn{border:0;border-radius:999px;padding:10px 20px;font:700 .95rem var(--body);cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.timer{display:flex;gap:8px;align-items:center;font:500 1rem var(--mono)}
+.timer button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:5px 10px;font:600 .85rem var(--body);cursor:pointer}
+/* week plan + tips */
+.weekplan{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.wp{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 6px;text-align:center;font-size:.82rem;display:grid;gap:2px}
+.wp b{font-family:var(--display);font-size:1rem}
+.wp.lift{background:var(--accent-soft);border-color:var(--accent)}
+.tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:4px;font-size:.94rem}
+.tip b{font-family:var(--display);font-size:1.15rem}
+/* progress */
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stat b{display:block;font:700 2rem/1 var(--display);color:var(--accent)}
+.stat span{font-size:.85rem;color:var(--muted)}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:640px){
+  h1{font-size:2.1rem}
+  .phases{grid-template-columns:1fr}
+  .days{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .weeks{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .weekplan{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tips{grid-template-columns:1fr}
+  .ex{grid-template-columns:1.8rem minmax(0,1fr)}
+  .ex .rx{grid-column:2}
+  .log,details{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">12-week program · 3 full-body days (30–45 min) + 1 arm day (20 min)</span>
+    <h1>Strong Legs &amp; Core Plan</h1>
+    <p class="muted">Full-body strength sessions built around your legs, core and back. Every exercise has a gym and a home version, form cues, and a demo video search. Log your weights each session and the page shows your progress.</p>
+    <p class="note">Get a quick OK from your doctor before starting, especially with any blood pressure, joint or heart concerns. Stop any exercise that causes sharp pain.</p>
+    <p class="sync" id="sync"></p>
+    <p class="note" id="install" hidden><b>Install on your iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>. It then opens like an app and works without internet.</p>
+  </header>
+
+  <section aria-labelledby="h-week">
+    <div class="row">
+      <h2 id="h-week">Week <span id="wkNum">1</span></h2>
+      <div class="seg" role="group" aria-label="Where are you training today?">
+        <button id="mGym" aria-pressed="true">Gym</button>
+        <button id="mHome" aria-pressed="false">Home</button>
+      </div>
+    </div>
+    <div class="phases" id="phases"></div>
+    <div class="weeks" id="weeks" aria-label="Choose a week"></div>
+  </section>
+
+  <section aria-labelledby="h-session">
+    <h2 id="h-session" class="sr" hidden>Workout</h2>
+    <div class="days" id="days"></div>
+    <div class="session" id="session"></div>
+  </section>
+
+  <section aria-labelledby="h-plan">
+    <h2 id="h-plan">Your week</h2>
+    <div class="weekplan">
+      <div class="wp lift"><b>Mon</b>Workout A</div>
+      <div class="wp"><b>Tue</b>Walk 30 min</div>
+      <div class="wp lift"><b>Wed</b>Workout B</div>
+      <div class="wp"><b>Thu</b>Walk 30 min</div>
+      <div class="wp lift"><b>Fri</b>Workout C</div>
+      <div class="wp lift"><b>Sat</b>Arm Day D (20 min) + walk</div>
+      <div class="wp"><b>Sun</b>Rest + stretch</div>
+    </div>
+    <p class="muted" style="font-size:.9rem">Any three non-consecutive days work for A, B and C. Keep a rest day between them so your legs and back can recover. Arm Day is light enough to go on any other day, but skip it the day before Workout A or C if your grip feels tired.</p>
+  </section>
+
+  <section aria-labelledby="h-tips">
+    <h2 id="h-tips">What moves the needle at 50+</h2>
+    <div class="tips">
+      <div class="tip"><b>Lift heavy enough</b>Pick a weight where the last 2 reps of each set are hard but your form holds. When you hit the top of the rep range on every set, go up 2.5–5 lbs next time.</div>
+      <div class="tip"><b>Protein at every meal</b>Muscle building gets harder after menopause. Aim for a palm-to-hand-sized portion of protein at each meal, and ask your doctor or a dietitian for a daily target.</div>
+      <div class="tip"><b>Brace before you move</b>Take a breath into your belly, tighten your midsection like you're about to be poked, then lift. This protects your back on every exercise.</div>
+      <div class="tip"><b>Walk on off days</b>Daily walking does more for steady weight loss than extra hard workouts, and it won't eat into recovery. Sleep 7+ hours when you can.</div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-prog">
+    <h2 id="h-prog">Progress</h2>
+    <div class="stats" id="stats"></div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <div class="tbl"><table><thead><tr><th>Exercise</th><th>First logged</th><th>Latest</th><th>Change</th></tr></thead><tbody id="prog"></tbody></table></div>
+  </section>
+  <section aria-labelledby="h-bk">
+    <h2 id="h-bk">Backup</h2>
+    <p class="muted" style="font-size:.92rem;max-width:62ch">Your log lives only on this device. Save a backup file once a month (to Files or iCloud Drive), and restore it if you change phones.</p>
+    <div class="row" style="justify-content:flex-start">
+      <button class="btn" id="bkSave">Save backup file</button>
+      <label class="btn ghost" for="bkFile" style="display:inline-block">Restore from file</label>
+      <input type="file" id="bkFile" accept="application/json,.json" hidden>
+    </div>
+    <p class="sync" id="bkMsg" role="status"></p>
+  </section>
+</div>
+
+<script>
+const PHASES=[
+  {name:"Foundation",weeks:"Weeks 1–4",desc:"Learn the movements. Moderate weight, controlled tempo."},
+  {name:"Build",weeks:"Weeks 5–8",desc:"Add weight and a set. Muscle-building zone."},
+  {name:"Strength",weeks:"Weeks 9–12",desc:"Heavier, fewer reps. Week 12: compare to week 1."}
+];
+const yt=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q+" proper form");
+const EX={
+ squat:{name:"Goblet Squat",gym:"Goblet Squat (or Leg Press)",home:"Dumbbell Goblet Squat",tag:"Legs",unit:"lbs",
+  rx:["3 × 10–12","4 × 8–10","4 × 6–8"],
+  cues:["Hold one dumbbell at your chest, elbows pointing down.","Feet a bit wider than hips, toes slightly out.","Sit down between your heels, chest tall, knees track over toes.","Push the floor away to stand; squeeze glutes at the top."],
+  mistake:"Heels lifting or knees caving in. Go lighter or squat to a box until it feels solid."},
+ rdl:{name:"Romanian Deadlift",gym:"Dumbbell Romanian Deadlift",home:"Dumbbell Romanian Deadlift",tag:"Legs · Back",unit:"lbs",
+  rx:["3 × 10–12","3 × 8–10","4 × 6–8"],
+  cues:["Soft knees, weights in front of thighs.","Push hips straight back like closing a car door with your rear.","Keep weights close to your legs and back flat.","Stop when you feel a hamstring stretch (usually mid-shin), then drive hips forward."],
+  mistake:"Rounding the back to reach lower. Range comes from the hips, not the spine."},
+ pulldown:{name:"Lat Pulldown",gym:"Lat Pulldown",home:"Resistance Band Lat Pulldown",tag:"Back",unit:"lbs",
+  rx:["3 × 10–12","3 × 10–12","4 × 8–10"],
+  cues:["Grip slightly wider than shoulders.","Lean back a little, chest up.","Pull elbows down toward your back pockets.","Control the return; don't let the weight yank you up."],
+  mistake:"Pulling with arms only or swinging. Think 'elbows down', not 'hands down'."},
+ bridge:{name:"Hip Thrust",gym:"Barbell or Machine Hip Thrust",home:"Dumbbell Glute Bridge",tag:"Glutes",unit:"lbs",
+  rx:["3 × 12","3 × 10–12","4 × 8–10"],
+  cues:["Feet flat, about a foot from your hips.","Tuck your chin and ribs down.","Drive through heels until hips are in line with knees and shoulders.","Pause 1 second and squeeze at the top."],
+  mistake:"Arching the low back at the top. Stop when your body is a straight line."},
+ deadbug:{name:"Dead Bug",gym:"Dead Bug",home:"Dead Bug",tag:"Core",unit:"reps",
+  rx:["3 × 8 / side","3 × 10 / side","3 × 10 / side (hold light weight)"],
+  cues:["Lie on back, arms up, knees bent at 90° over hips.","Press your low back into the floor and keep it there.","Slowly lower opposite arm and leg, exhaling.","Return and switch sides."],
+  mistake:"Low back popping off the floor. Make the movement smaller until it stays down."},
+ birddog:{name:"Bird Dog",gym:"Bird Dog",home:"Bird Dog",tag:"Core · Back",unit:"reps",
+  rx:["2 × 8 / side","3 × 8 / side (3-sec hold)","3 × 10 / side (3-sec hold)"],
+  cues:["Hands under shoulders, knees under hips.","Reach one arm forward and opposite leg back.","Keep hips level, as if balancing a cup on your low back.","Pause, return slowly, switch."],
+  mistake:"Twisting the hips or lifting the leg too high. Long, not high."},
+ lunge:{name:"Reverse Lunge",gym:"Dumbbell Reverse Lunge",home:"Dumbbell Reverse Lunge",tag:"Legs",unit:"lbs",
+  rx:["3 × 8 / leg","3 × 10 / leg","4 × 8 / leg"],
+  cues:["Stand tall, step one foot back.","Lower the back knee toward the floor.","Front shin stays fairly vertical; weight in front heel.","Push through the front foot to return."],
+  mistake:"Wobbling or front knee collapsing in. Hold a rail or wall for balance at first, no weights."},
+ row:{name:"Seated Row",gym:"Seated Cable Row",home:"Single-Arm Dumbbell Row",tag:"Back",unit:"lbs",
+  rx:["3 × 10–12","4 × 10","4 × 8"],
+  cues:["Sit or hinge with a flat back.","Pull elbow back past your ribs.","Squeeze shoulder blades together and down.","Lower slowly."],
+  mistake:"Shrugging the shoulders up toward the ears. Keep them long and down."},
+ press:{name:"Chest Press",gym:"Dumbbell Bench Press",home:"Incline Push-Up (hands on counter or bench)",tag:"Upper body",unit:"lbs",
+  rx:["3 × 10–12","3 × 8–10","4 × 6–8"],
+  cues:["Shoulder blades pinched back and down.","Lower with control until elbows are just below the bench (or chest near the counter).","Elbows at about 45°, not flared wide.","Press up and slightly in."],
+  mistake:"Flaring elbows straight out, which strains shoulders."},
+ stepup:{name:"Step-Up",gym:"Dumbbell Step-Up",home:"Step-Up (stair or sturdy bench)",tag:"Legs",unit:"lbs",
+  rx:["3 × 8 / leg","3 × 10 / leg","3 × 10 / leg (heavier)"],
+  cues:["Whole foot on a knee-height (or lower) step.","Lean slightly forward and drive through the top heel.","Stand fully tall at the top.","Lower slowly; don't push off the bottom foot."],
+  mistake:"Bouncing off the back foot. The top leg should do the work."},
+ sideplank:{name:"Side Plank",gym:"Side Plank",home:"Side Plank",tag:"Core",unit:"sec",
+  rx:["2 × 20 sec / side (knees ok)","3 × 30 sec / side","3 × 40 sec / side"],
+  cues:["Elbow under shoulder.","Stack hips and feet (or bend knees to make it easier).","Lift hips to a straight line from head to feet.","Breathe; don't hold your breath."],
+  mistake:"Hips sagging toward the floor. Shorter, better holds win."},
+ pallof:{name:"Pallof Press",gym:"Cable Pallof Press",home:"Band Pallof Press",tag:"Core",unit:"reps",
+  rx:["3 × 10 / side","3 × 12 / side","3 × 12 / side (2-sec hold)"],
+  cues:["Stand sideways to the cable or band anchor.","Hold handle at your chest, feet hip-width.","Press straight out and resist being pulled sideways.","Bring back to chest with control."],
+  mistake:"Letting the torso rotate. The whole point is to stay square."},
+ deadlift:{name:"Deadlift",gym:"Trap Bar or Kettlebell Deadlift",home:"Dumbbell Sumo Deadlift",tag:"Legs · Back",unit:"lbs",
+  rx:["3 × 10","4 × 8","4 × 5–6"],
+  cues:["Weight between or beside your feet.","Hips back, chest up, flat back, grip it.","Brace your belly, then push the floor away.","Stand tall, then lower by sending hips back first."],
+  mistake:"Jerking the weight up or rounding the back. Set your position before every rep."},
+ split:{name:"Split Squat",gym:"Bulgarian Split Squat",home:"Split Squat (back foot on floor or couch)",tag:"Legs",unit:"lbs",
+  rx:["2 × 8 / leg","3 × 8–10 / leg","3 × 8 / leg"],
+  cues:["Long stance, back foot on floor or a bench behind you.","Drop straight down; torso slightly forward.","Front knee follows the toes.","Drive through the front heel."],
+  mistake:"Stance too short, which loads the knee. Scoot the front foot forward."},
+ facepull:{name:"Face Pull",gym:"Cable Face Pull",home:"Band Pull-Apart",tag:"Upper back · Posture",unit:"lbs",
+  rx:["3 × 12–15","3 × 12–15","3 × 15"],
+  cues:["Arms straight out at shoulder height.","Pull toward your face, elbows high and wide.","Squeeze between shoulder blades.","Return slowly."],
+  mistake:"Using too much weight and leaning back. This is a light, controlled move."},
+ ohp:{name:"Shoulder Press",gym:"Seated Dumbbell Shoulder Press",home:"Standing Dumbbell Shoulder Press",tag:"Upper body",unit:"lbs",
+  rx:["3 × 10–12","3 × 8–10","4 × 8"],
+  cues:["Dumbbells at shoulder height, palms forward or facing in.","Ribs down, glutes tight.","Press up until arms are straight by your ears.","Lower to shoulders with control."],
+  mistake:"Arching the low back to push the weight up. Brace your core or sit with back support."},
+ carry:{name:"Farmer's Carry",gym:"Farmer's Carry",home:"Farmer's Carry (dumbbells or loaded grocery bags)",tag:"Core · Grip",unit:"lbs",
+  rx:["3 × 30 sec","3 × 40 sec","4 × 40 sec (heavier)"],
+  cues:["Heavy weight in each hand.","Stand tall, shoulders down and back.","Walk with short, steady steps.","Don't let the weights swing or your body lean."],
+  mistake:"Shrugging or hunching. Think 'tall and proud'."},
+ curl:{name:"Biceps Curl",gym:"Dumbbell or Cable Biceps Curl",home:"Dumbbell Biceps Curl",tag:"Arms · Biceps",unit:"lbs",
+  rx:["3 × 12","3 × 10–12","3 × 8–10 (heavier)"],
+  cues:["Stand tall, elbows pinned at your sides.","Palms face forward.","Curl up without letting elbows drift forward.","Lower slowly for a 2–3 count."],
+  mistake:"Swinging the body to lift the weight. If you have to swing, go lighter."},
+ ohext:{name:"Overhead Triceps Extension",gym:"Cable Overhead Triceps Extension",home:"Dumbbell Overhead Triceps Extension",tag:"Arms · Triceps",unit:"lbs",
+  rx:["3 × 12","3 × 10–12","3 × 8–10 (heavier)"],
+  cues:["Hold one dumbbell with both hands overhead (seated is easier on your back).","Keep elbows pointing forward, close to your head.","Lower the weight behind your head until you feel a stretch.","Straighten arms without moving your upper arms."],
+  mistake:"Elbows flaring out or low back arching. Brace your core and sit with back support if needed."},
+ hammer:{name:"Hammer Curl",gym:"Dumbbell Hammer Curl",home:"Dumbbell Hammer Curl",tag:"Arms · Biceps · Forearms",unit:"lbs",
+  rx:["3 × 12","3 × 10–12","3 × 10"],
+  cues:["Palms face each other, like holding hammers.","Elbows stay at your sides.","Curl up to shoulder height.","Lower with control."],
+  mistake:"Shrugging the shoulders up. Keep them relaxed and down."},
+ pushdown:{name:"Triceps Pushdown",gym:"Cable Triceps Pushdown",home:"Dumbbell Triceps Kickback",tag:"Arms · Triceps",unit:"lbs",
+  rx:["3 × 12–15","3 × 12","3 × 10 (heavier)"],
+  cues:["Elbows tucked at your sides (for kickbacks: hinge forward, upper arm parallel to the floor).","Straighten your arm fully and squeeze the back of the arm.","Only the forearm moves.","Return slowly."],
+  mistake:"Using the shoulders or body to move the weight. Lighter and strict is better here."},
+ plank:{name:"Plank",gym:"Forearm Plank",home:"Forearm Plank",tag:"Core",unit:"sec",
+  rx:["3 × 20–30 sec","3 × 30–40 sec","3 × 45 sec"],
+  cues:["Elbows under shoulders, legs straight (knees down is fine).","Squeeze glutes and pull belly button in.","Straight line head to heels.","Breathe steadily."],
+  mistake:"Hips sagging or piking up. Stop the set when form breaks."}
+};
+const WORKOUTS={
+ A:{label:"Workout A",focus:"Squat · Hinge · Pull",list:["squat","rdl","pulldown","bridge","deadbug","birddog"]},
+ B:{label:"Workout B",focus:"Lunge · Row · Press",list:["lunge","row","press","stepup","sideplank","pallof"]},
+ C:{label:"Workout C",focus:"Deadlift · Single-leg · Carry",list:["deadlift","split","facepull","ohp","carry","plank"]},
+ D:{label:"Arm Day D · 20 min",focus:"Biceps · Triceps",list:["curl","ohext","hammer","pushdown"]}
+};
+const DAYS=["A","B","C","D"];
+const phaseOf=w=>w<=4?0:w<=8?1:2;
+const $=id=>document.getElementById(id);
+
+let state={sessions:{},mode:"gym"};
+let cur={week:1,day:"A"};
+let backend=null; // {save(key,obj)}
+const LS="strong-legs-core-v1";
+
+/* ---------- storage ---------- */
+function lsLoad(){try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s)state=Object.assign(state,s)}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+const pending={};const writing={};
+function queueSave(key){
+  lsSave();
+  if(!backend)return;
+  clearTimeout(pending[key]);
+  pending[key]=setTimeout(()=>flush(key),700);
+}
+async function flush(key){
+  if(writing[key]){writing[key].again=true;return}
+  writing[key]={again:false};
+  try{await backend.save(key,key==="settings"?{mode:state.mode}:state.sessions[key]||{});setSync("Saved to your account")}
+  catch(e){setSync("Couldn't save to your account just now. Your entries are kept on this device.")}
+  const again=writing[key].again;writing[key]=null;
+  if(again)flush(key);
+}
+function setSync(t){$("sync").textContent=t}
+
+/* ---------- helpers ---------- */
+const key=(w,d)=>"w"+w+"-"+d;
+const sess=(w,d)=>state.sessions[key(w,d)]||{};
+function ensure(w,d){const k=key(w,d);if(!state.sessions[k])state.sessions[k]={done:false,log:{}};if(!state.sessions[k].log)state.sessions[k].log={};return state.sessions[k]}
+function lastLogged(exId,beforeWeek,beforeDayIdx){
+  for(let w=beforeWeek;w>=1;w--){for(let i=(w===beforeWeek?beforeDayIdx-1:DAYS.length-1);i>=0;i--){const v=sess(w,DAYS[i]).log?.[exId];if(v)return {v,w}}}
+  return null;
+}
+function pickStart(){
+  for(let w=1;w<=12;w++)for(const d of DAYS)if(!sess(w,d).done){cur={week:w,day:d};return}
+  cur={week:12,day:"D"};
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- render ---------- */
+function render(){
+  const p=phaseOf(cur.week);
+  $("wkNum").textContent=cur.week;
+  $("mGym").setAttribute("aria-pressed",state.mode==="gym");
+  $("mHome").setAttribute("aria-pressed",state.mode==="home");
+  $("phases").innerHTML=PHASES.map((ph,i)=>`<div class="phase${i===p?" on":""}"><b>${ph.name}</b><span>${ph.weeks}</span><span>${ph.desc}</span></div>`).join("");
+  let wk="";for(let w=1;w<=12;w++){wk+=`<button class="wk" data-w="${w}" aria-current="${w===cur.week}" aria-label="Week ${w}">${w}<span class="dots">${DAYS.map(d=>`<i class="${sess(w,d).done?"d":""}"></i>`).join("")}</span></button>`}
+  $("weeks").innerHTML=wk;
+  $("days").innerHTML=DAYS.map(d=>{const s=sess(cur.week,d);const W=WORKOUTS[d];return `<button class="day" data-d="${d}" aria-pressed="${d===cur.day}"><small>${W.label}</small><strong>${W.focus}</strong><span class="st${s.done?" ok":""}">${s.done?"✓ Done"+(s.date?" · "+s.date:""):"Not done yet"}</span></button>`}).join("");
+  renderSession();renderProgress();
+}
+function renderSession(){
+  const W=WORKOUTS[cur.day],p=phaseOf(cur.week),s=sess(cur.week,cur.day),di=DAYS.indexOf(cur.day);
+  let h=`<div class="row"><h3>Week ${cur.week} · ${W.label}</h3><span class="tag">${PHASES[p].name} phase · ${state.mode==="gym"?"Gym":"Home"} version</span></div>
+  <p class="warm">${cur.day==="D"?`<b>Format (about 18 min):</b> 2 min warm-up of arm circles and 1 light set of curls. Then two supersets: do <b>#1 and #2</b> back to back, rest 60 sec, repeat for all sets. Then do the same with <b>#3 and #4</b>. Toned arms come from your weights going up, so log them.`:`<b>Warm-up (5 min):</b> brisk walk or bike 3 min, then 10 bodyweight squats, 10 glute bridges, 10 arm circles each way. <b>Rest</b> 60–90 sec between sets (2 min for squats and deadlifts).`}</p>`;
+  W.list.forEach((id,i)=>{
+    const e=EX[id],vname=state.mode==="gym"?e.gym:e.home,val=s.log?.[id]||"",prev=lastLogged(id,cur.week,di);
+    const lbl=e.unit==="lbs"?"Weight used (lbs)":e.unit==="sec"?"Seconds held":"Reps / notes";
+    h+=`<div class="ex"><span class="n">${i+1}</span><div class="main"><span class="tag">${e.tag}</span><span class="name">${esc(vname)}</span></div><span class="rx">${e.rx[p]}</span>
+    <div class="log"><label for="in-${id}">${lbl}<input id="in-${id}" data-ex="${id}" value="${esc(val)}" inputmode="${e.unit==="reps"?"text":"decimal"}" autocomplete="off"></label>${prev?`<span class="prev">Last time (wk ${prev.w}): ${esc(prev.v)}</span>`:""}</div>
+    <details><summary>How to do it</summary><div class="how"><ul>${e.cues.map(c=>`<li>${c}</li>`).join("")}</ul><p class="warn"><b>Watch for:</b> ${e.mistake}</p><p><a href="${yt(vname)}" target="_blank" rel="noopener">Watch demo videos ↗</a></p></div></details></div>`;
+  });
+  h+=`<div class="actions"><div class="timer"><span id="tm">Rest 0:00</span><button data-t="60">60s</button><button data-t="90">90s</button><button data-t="120">2 min</button></div>
+  <button class="btn${s.done?" ghost":""}" id="doneBtn">${s.done?"Mark as not done":"Mark workout done"}</button></div>`;
+  $("session").innerHTML=h;
+}
+function renderProgress(){
+  let done=0;for(const k in state.sessions)if(state.sessions[k].done)done++;
+  let firstOpen=null;for(let w=1;w<=12&&!firstOpen;w++)for(const d of DAYS)if(!sess(w,d).done){firstOpen=w;break}
+  const weeksFull=[...Array(12)].filter((_,i)=>DAYS.every(d=>sess(i+1,d).done)).length;
+  $("stats").innerHTML=`<div class="stat"><b>${done}<small style="font-size:1rem"> / 48</small></b><span>workouts done</span></div><div class="stat"><b>${weeksFull}</b><span>full weeks completed</span></div><div class="stat"><b>${PHASES[phaseOf(firstOpen||12)].name}</b><span>current phase</span></div>`;
+  $("bar").style.width=(done/48*100)+"%";
+  const rows=[];
+  for(const id in EX){
+    if(EX[id].unit==="reps")continue;
+    const hits=[];for(let w=1;w<=12;w++)DAYS.forEach(d=>{const v=sess(w,d).log?.[id];if(v)hits.push({v,w})});
+    if(!hits.length)continue;
+    const a=hits[0],b=hits[hits.length-1],na=parseFloat(a.v),nb=parseFloat(b.v);
+    const ch=(!isNaN(na)&&!isNaN(nb)&&hits.length>1)?(nb-na>0?"+":"")+(nb-na)+" "+(EX[id].unit==="sec"?"sec":"lbs"):"–";
+    rows.push(`<tr><td>${EX[id].name}</td><td class="num">${esc(a.v)} · wk ${a.w}</td><td class="num">${esc(b.v)} · wk ${b.w}</td><td class="num">${ch}</td></tr>`);
+  }
+  $("prog").innerHTML=rows.length?rows.join(""):`<tr><td colspan="4" class="muted">Log your weights during each workout and your progress shows up here.</td></tr>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",ev=>{
+  const t=ev.target.closest("button");if(!t)return;
+  if(t.dataset.w){cur.week=+t.dataset.w;render()}
+  else if(t.dataset.d){cur.day=t.dataset.d;render()}
+  else if(t.id==="mGym"||t.id==="mHome"){state.mode=t.id==="mGym"?"gym":"home";queueSave("settings");render()}
+  else if(t.id==="doneBtn"){const s=ensure(cur.week,cur.day);s.done=!s.done;s.date=s.done?new Date().toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";queueSave(key(cur.week,cur.day));render()}
+  else if(t.dataset.t){startTimer(+t.dataset.t)}
+});
+document.addEventListener("input",ev=>{
+  const ex=ev.target.dataset?.ex;if(!ex)return;
+  const s=ensure(cur.week,cur.day);s.log[ex]=ev.target.value.trim();queueSave(key(cur.week,cur.day));renderProgress();
+});
+let tmI=null;
+function startTimer(sec){
+  clearInterval(tmI);let left=sec;const el=$("tm");
+  const show=()=>{el.textContent=(left>0?"Rest ":"Go! ")+Math.floor(left/60)+":"+String(left%60).padStart(2,"0")};
+  show();tmI=setInterval(()=>{left--;if(left<=0){left=0;clearInterval(tmI)}show()},1000);
+}
+
+lsLoad();pickStart();render();setSync("Your log is saved on this phone. Use Backup below now and then to keep a copy.");
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+(function(){
+  const standalone=window.navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
+  if(!standalone&&/iPhone|iPad/.test(navigator.userAgent))$("install").hidden=false;
+  $("bkSave").addEventListener("click",async()=>{
+    const data=JSON.stringify({app:"strong-plan",version:1,saved:new Date().toISOString(),state},null,1);
+    const name="strong-plan-backup-"+new Date().toISOString().slice(0,10)+".json";
+    const file=new File([data],name,{type:"application/json"});
+    try{
+      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Workout backup"});$("bkMsg").textContent="Backup ready. Choose Save to Files to keep it.";return}
+    }catch(e){if(e&&e.name==="AbortError")return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove();
+    $("bkMsg").textContent="Backup saved as "+name+".";
+  });
+  $("bkFile").addEventListener("change",async ev=>{
+    const f=ev.target.files[0];if(!f)return;
+    try{
+      const obj=JSON.parse(await f.text());
+      if(!obj||obj.app!=="strong-plan"||!obj.state||typeof obj.state.sessions!=="object")throw new Error("bad");
+      state=Object.assign({sessions:{},mode:"gym"},obj.state);lsSave();pickStart();render();
+      $("bkMsg").textContent="Restored your log from "+f.name+".";
+    }catch(e){$("bkMsg").textContent="That file isn't a workout backup from this app. Pick a file named strong-plan-backup-….json."}
+    ev.target.value="";
+  });
+})();
+
+</script>
+
+</body>
+</html>
